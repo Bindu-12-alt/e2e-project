@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoadRescue - Smart Vehicle Breakdown Assistance</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="logo">🚗 RoadRescue</div>
+      <div class="nav-links" id="navLinks">
+        <a href="#home" class="active">Home</a>
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+
+        <div id="authButtons">
+          <button class="btn-secondary" onclick="showLogin()">Login</button>
+          <button class="btn-primary" onclick="showRegister()">Register</button>
+        </div>
+
+        <div id="userMenu" style="display: none;">
+          <span id="userName"></span>
+          <button class="btn-secondary" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="container">
+      <h1>Vehicle Breakdown? We've Got You Covered!</h1>
+      <p>Connect with nearby mechanics instantly using real-time GPS tracking</p>
+      <button class="btn-hero" onclick="showRequestForm()">Request Mechanic Now</button>
+    </div>
+  </section>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit" class="btn-primary">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('registerModal')">&times;</span>
+      <h2>Create Account</h2>
+      <form id="registerForm">
+        <input type="text" id="regName" placeholder="Full Name" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="tel" id="regPhone" placeholder="Phone Number" required>
+        <input type="password" id="regPassword" placeholder="Password" required>
+
+        <select id="regRole">
+          <option value="user">User</option>
+          <option value="mechanic">Mechanic</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <div id="mechanicFields" style="display: none;">
+          <input type="text" id="regSpecialization" placeholder="Specialization">
+          <input type="number" id="regExperience" placeholder="Years of Experience">
+        </div>
+
+        <button type="submit" class="btn-primary">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Service Request Modal (ONLY ONE – Correct One) -->
+  <div id="requestModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('requestModal')">&times;</span>
+      <h2>Request Mechanic Assistance</h2>
+
+      <form id="requestForm">
+        <select id="vehicleType" required>
+          <option value="">Select Vehicle Type</option>
+          <option value="car">Car</option>
+          <option value="bike">Bike</option>
+          <option value="truck">Truck</option>
+          <option value="suv">SUV</option>
+        </select>
+
+        <textarea id="problemDescription" placeholder="Describe the problem..." required></textarea>
+
+        <select id="urgency">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High - Emergency</option>
+        </select>
+
+        <div id="map" style="height:300px; margin:15px 0;"></div>
+        <p id="locationText">Detecting your location...</p>
+
+        <button type="submit" class="btn-primary">Submit Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Dashboard -->
+<!-- Dashboard Section -->
+<section id="dashboard" style="display: none;">
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h2 style="margin: 0;">My Service Requests</h2>
+      <button class="btn-primary" onclick="showRequestForm()" style="padding: 15px 30px; font-size: 1.1rem;">
+        🚗 Request Mechanic Now
+      </button>
+    </div>
+    <div id="requestsList"></div>
+  </div>
+</section>
+
+<!-- Mechanic Dashboard -->
+<section id="mechanicDashboard" style="display: none;">
+  <div class="container">
+    <h2>Mechanic Dashboard</h2>
+    <button class="btn-primary" onclick="toggleAvailability()">Toggle Availability</button>
+    <button class="btn-secondary" onclick="updateLocation()">Update My Location</button>
+    <button class="btn-primary" onclick="showRequestForm()" style="margin-top:15px;">
+      Request Mechanic
+    </button>
+    <div id="jobsList"></div>
+  </div>
+</section>
+
+<!-- Admin Dashboard -->
+<section id="adminDashboard" style="display: none;">
+  <div class="container">
+    <h2>Admin Dashboard</h2>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>👥 Total Users</h3>
+        <p class="stat-number" id="totalUsers">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>🔧 Total Mechanics</h3>
+        <p class="stat-number" id="totalMechanics">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>📋 Total Requests</h3>
+        <p class="stat-number" id="totalRequests">0</p>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+  <button class="tab-btn active" onclick="showAdminTab('users', this)">Users</button>
+  <button class="tab-btn" onclick="showAdminTab('mechanics', this)">Mechanics</button>
+  <button class="tab-btn" onclick="showAdminTab('requests', this)">Requests</button>
+  <button class="tab-btn" onclick="showAdminTab('payments', this)">Payments</button>
+</div>
+
+    <div id="adminTabContent">
+      <div id="usersTab" class="admin-tab-panel active"></div>
+      <div id="mechanicsTab" class="admin-tab-panel"></div>
+      <div id="requestsTab" class="admin-tab-panel"></div>
+    </div>
+  </div>
+</section>
+
+  <!-- Scripts -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcMTONsQs1L_vbxqIsuLlJZ9u1r5y4Xgc&libraries=places"
+  ></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
